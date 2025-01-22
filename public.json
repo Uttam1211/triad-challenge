@@ -2,12 +2,11 @@
   "keys": [
     {
       "kty": "RSA",
+      "e": "AQAB",
       "use": "sig",
-      "key_ops": ["sign"],
-      "alg": "RS512",
       "kid": "test-1",
-      "n": "p1Tj4Z_kk74HkRAJOez-fH1vqVSUBpqRx1dcW0IDS-dydnaqNwydVBV_yQuWkYR1bT6Z1tR8n6nrld7evecjYut20p3RY7feKv8emL-ZNQi0laC-u7vG6B38hyULphtiHq1ZLW9yaWM3IwyHSX3P-1Hnf61Ce3eNu4vz8HhGCIIVGAw1ABI3DlweNoMaVwA7dGwgCuodzJI_fR70r427La4RtpUv6VRZsFvCoqcaY3hz9Bk-QeHMRZKN9pfzV_EQgE0kUIfI5nbDN05mSbImKqS6zkR6IEGlmOYuea4Mj9zQBeCqloXCWmR1qI9Pkva2lPiyjzvuGdY_gKUOT88IUhP-qixCvllep-3QFSu2B0VmiK2NN34NO4dPMkOwPKlTnM2WESHhSGvW4_5eUBgUWZYVMQnwTUa8S8hF8VHkItJFedf105H0USx7r2Ogs0m19qUFM4lG7HdihheIjAXnCCuXBGWk58vLBipnzkd7GEgXRpW-ZgrEKhm1HS3IbAdQ7Wl1pzVfBQFxUuj4jUOIPf_IaoQHob4e_A5d0ZJSwgCG2jXr0r0NIsUTKygyCOgxY8bK1E4tqy3XqTIpMBjCdDptNbpvrLRphS0dMNkbKRsH5zIp4AeEz_8eLfWy30bz_iN6h5sf8mN5bj79Ks_uJX-heqh4mUv5Vw7kB_c-u-0",
-      "e": "AQAB"
+      "alg": "RS512",
+      "n": "mFarrKA32-JUYgeZD6eE37ZjL1kDBciS5CisGbR-h_a3TZtH4MPCOt-5KN_togH2GYapzUBzfOWruG0BJXXWQKbaMjX3lzZ-FzNynlXLkwLv7IK5kHPSY_2a36vpepZCA2T01JQ5TYotvNZ0MasD1pU0JuJtRabOY-ATFzOuACHcasfyVJAnq8nMA9Py-5VUq4M2PEswGiQCsNV5okDwq5arTo1XYWZdhAHcxswXj7uqRY-n10ZhQHZXZU6UUckxuOibAadqj1wucV1wMdyM3OZexNvXRLkz-OEK5csZvAm5K4ENRhJjSF0lYItHJrhoySaUDZ1KZ0GJP7C6FikKdPR-Mj2jyjK2Tl_s-IVSPdJI6WOp7kUkOMDpT_tyTYSZtoGFCHS8u_Nn6OPLuuYO8leocA4izyOxhxpjiQ9CL1MNseMCMvfAemkNEbKeZY-P2Ez8l2NnsFSuPJbhS_g6U-TPaxIa2IMF7NQWrJzOJVGIi8R1YiBAdoQ9Cf_e9zzai0cyixJbhtx_rMUFu4tKBkRsMurzClFJsOf87GvntONeqhuTw3smKVuoYizZmlZaYzIM8pd4TJpOIJvmUkw5uOGDle49rxmbRpLD8p9oqXU_tmahBUdYfbNam7440lK3Ueh4nEEa1oYF5B2ho67JssPZXM-lKkXtQKMomtupil8"
     }
   ]
 }
