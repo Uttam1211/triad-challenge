@@ -31,10 +31,23 @@ model User {
   updatedAt     DateTime      @updatedAt
 }
 
+model GPMain {
+  id            Int           @id @default(autoincrement())
+  name          String        // Surgery name
+  address       String
+  phoneNumber   String
+  email         String        @unique
+  doctors       GP[]          // Relation to individual doctors
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
 model GP {
   id            Int           @id @default(autoincrement())
   name          String
   email         String        @unique
+  gpMainId      Int          // Reference to the surgery
+  gpMain        GPMain       @relation(fields: [gpMainId], references: [id])
   freeSlots     FreeSlot[]
   users         User[]
   familyMembers FamilyMember[]

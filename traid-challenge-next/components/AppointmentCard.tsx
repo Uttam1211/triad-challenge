@@ -48,18 +48,26 @@ export const AppointmentCard = ({
       <div className="flex items-center space-x-3 mb-2">
         <Calendar className="text-[#005EB8]" size={20} />
         <span className="text-gray-800">
-          {format(new Date(appointment.freeSlot.startTime), "MMMM do, yyyy")}
+          {appointment.freeSlot?.startTime
+            ? format(new Date(appointment.freeSlot.startTime), "MMMM do, yyyy")
+            : "Date not set"}
         </span>
       </div>
       <div className="flex items-center space-x-3 mb-2">
         <Clock className="text-[#005EB8]" size={20} />
         <span className="text-gray-800">
-          {format(new Date(appointment.freeSlot.startTime), "h:mm a")}
+          {appointment.freeSlot?.startTime
+            ? format(new Date(appointment.freeSlot.startTime), "h:mm a")
+            : "Time not set"}
         </span>
       </div>
       <div className="flex items-center space-x-3">
         <MapPin className="text-[#005EB8]" size={20} />
-        <span className="text-gray-800">Dr. {appointment.gp.name}</span>
+        <span className="text-gray-800">
+          {appointment.gp?.name
+            ? `Dr. ${appointment.gp.name}`
+            : "Doctor not assigned"}
+        </span>
       </div>
       {appointment.notes && (
         <div className="mt-2 text-sm text-gray-600">
@@ -91,12 +99,17 @@ export const AppointmentCard = ({
                   Cancel Appointment
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-[#4C6272]">
-                  Are you sure you want to cancel this appointment with Dr.{" "}
-                  {appointment.gp.name} on{" "}
-                  {format(
-                    new Date(appointment.freeSlot.startTime),
-                    "MMMM do, yyyy 'at' h:mm a"
-                  )}
+                  Are you sure you want to cancel this appointment with{" "}
+                  {appointment.gp?.name
+                    ? `Dr. ${appointment.gp.name}`
+                    : "your doctor"}{" "}
+                  on{" "}
+                  {appointment.freeSlot?.startTime
+                    ? format(
+                        new Date(appointment.freeSlot.startTime),
+                        "MMMM do, yyyy 'at' h:mm a"
+                      )
+                    : "Date and time not set"}
                   ? This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
