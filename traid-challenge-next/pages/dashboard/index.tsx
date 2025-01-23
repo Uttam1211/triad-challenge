@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import {
   AppointmentCard,
-  type Appointment,
+  type AppointmentCardProps,
 } from "../../components/AppointmentCard";
 import { ReferralCard, type Referral } from "../../components/ReferralCard";
 import { AvailabilityCalendar } from "../../components/AvailabilityCalendar";
@@ -21,13 +21,17 @@ import { DashboardLayout } from "../../components/layouts/DashboardLayout";
 
 const UserDashboard = () => {
   // Example data - replace with real data from your API
-  const upcomingAppointments: Appointment[] = [
+  const upcomingAppointments: AppointmentCardProps["appointment"][] = [
     {
       id: 1,
-      date: "2025-03-15",
-      time: "10:00 AM",
-      type: "GP",
-      status: "scheduled",
+      freeSlot: {
+        startTime: "2025-03-15T10:00:00Z",
+        endTime: "2025-03-15T10:30:00Z",
+      },
+      status: "SCHEDULED",
+      gp: {
+        name: "Smith",
+      },
     },
   ];
 

@@ -1,80 +1,161 @@
 import { useState } from "react";
+import { format } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslations } from "next-intl";
+import { Info, AlertCircle } from "lucide-react";
+
+type AppointmentType = "GP" | "HOSPITAL";
 
 interface AppointmentBookingFormProps {
-  onSubmit: (data: any) => void;
-  doctors?: Array<{ id: string; name: string }>;
+  gp: {
+    id: number;
+    name: string;
+  };
+  availableSlots: Array<{
+    id: number;
+    startTime: string;
+    endTime: string;
+  }>;
+  onSubmit: (data: {
+    slotId: number;
+    notes: string;
+    type: AppointmentType;
+  }) => void;
 }
 
 export const AppointmentBookingForm = ({
+  gp,
+  availableSlots,
   onSubmit,
-  doctors = [],
 }: AppointmentBookingFormProps) => {
-  return (
-    <form
-      className="space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit({}); // Add form data here
-      }}
-    >
-      <div>
-        <label className="block text-sm font-medium mb-1" htmlFor="type">
-          Appointment Type
-        </label>
-        <select
-          id="type"
-          className="w-full border-2 border-gray-300 rounded-md p-2 focus:border-[#005EB8] focus:outline-none"
-        >
-          <option value="GP">GP Appointment</option>
-          <option value="Hospital">Hospital Appointment</option>
-        </select>
-      </div>
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [notes, setNotes] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations("appointments");
 
-      {doctors.length > 0 && (
-        <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="doctor">
-            Select Doctor
-          </label>
-          <select
-            id="doctor"
-            className="w-full border-2 border-gray-300 rounded-md p-2 focus:border-[#005EB8] focus:outline-none"
-          >
-            {doctors.map((doctor) => (
-              <option key={doctor.id} value={doctor.id}>
-                {doctor.name}
-              </option>
-            ))}
-          </select>
-        </div>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedSlot) return;
+
+    try {
+      setError(null);
+      setIsSubmitting(true);
+
+      await onSubmit({
+        slotId: selectedSlot,
+        notes,
+        type: "GP",
+      });
+    } catch (err) {
+      // Handle API error responses
+      if (err instanceof Error) {
+        try {
+          const errorData = JSON.parse(err.message);
+          setError(errorData.message || "Something went wrong");
+        } catch {
+          // If error message isn't JSON, use it directly
+          setError(err.message || "Something went wrong");
+        }
+      } else {
+        setError("Something went wrong");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!availableSlots.length) {
+    return (
+      <div className="space-y-4">
+        <Alert variant="destructive" className="border-2 border-[#d5281b]">
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-[#d5281b]">
+            No appointments are currently available. Please try again later or
+            contact your GP surgery directly.
+          </AlertDescription>
+        </Alert>
+        <a
+          href="tel:111"
+          className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#005eb8] hover:bg-[#004b93] rounded-md"
+        >
+          Call NHS 111
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <Alert variant="destructive" className="border-2 border-[#d5281b]">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-[#d5281b]">
+            {error}
+          </AlertDescription>
+        </Alert>
       )}
 
       <div>
-        <label className="block text-sm font-medium mb-1" htmlFor="date">
-          Date
+        <label className="block text-sm font-medium mb-1 text-[#212b32]">
+          GP
         </label>
-        <input
-          type="date"
-          id="date"
-          className="w-full border-2 border-gray-300 rounded-md p-2 focus:border-[#005EB8] focus:outline-none"
-        />
+        <div className="p-2 border-2 rounded-md bg-gray-50 text-[#212b32]">
+          {gp.name}
+        </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1" htmlFor="time">
-          Time
+        <label className="block text-sm font-medium mb-1 text-[#212b32]">
+          Available Slots
         </label>
-        <input
-          type="time"
-          id="time"
-          className="w-full border-2 border-gray-300 rounded-md p-2 focus:border-[#005EB8] focus:outline-none"
+        <Select
+          onValueChange={(value) => {
+            setSelectedSlot(Number(value));
+            setError(null);
+          }}
+          disabled={isSubmitting}
+        >
+          <SelectTrigger className="bg-white border-2">
+            <SelectValue placeholder="Select a time slot" />
+          </SelectTrigger>
+          <SelectContent>
+            {availableSlots.map((slot) => (
+              <SelectItem key={slot.id} value={slot.id.toString()}>
+                {format(new Date(slot.startTime), "PPP p")}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1 text-[#212b32]">
+          Notes (Optional)
+        </label>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Add any notes for your appointment"
+          className="min-h-[100px] bg-white border-2"
+          disabled={isSubmitting}
         />
       </div>
 
       <button
         type="submit"
-        className="w-full bg-[#005EB8] text-white py-2 px-4 rounded-md hover:bg-[#004B9C] transition-colors"
+        disabled={!selectedSlot || isSubmitting}
+        className="w-full bg-[#005eb8] text-white py-2 px-4 rounded-md hover:bg-[#004b93] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Book Appointment
+        {isSubmitting ? "Booking..." : "Book Appointment"}
       </button>
     </form>
   );

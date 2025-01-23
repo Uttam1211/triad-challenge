@@ -15,11 +15,15 @@ const HistoryPage = () => {
   const pastAppointments = [
     {
       id: 1,
-      date: "2023-12-15",
-      time: "14:30",
-      doctor: "Dr. Smith",
-      type: "General Checkup",
-      status: "completed",
+      freeSlot: {
+        startTime: "2023-12-15T14:30:00Z",
+        endTime: "2023-12-15T15:00:00Z",
+      },
+      status: "SCHEDULED" as const,
+      notes: "General Checkup",
+      gp: {
+        name: "Smith",
+      },
     },
   ];
 

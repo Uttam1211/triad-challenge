@@ -75,8 +75,8 @@ model Appointment {
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   gpId          Int
   gp            GP            @relation(fields: [gpId], references: [id], onDelete: Cascade)
-  freeSlotId    Int           @unique // Add @unique here
-  freeSlot      FreeSlot      @relation(fields: [freeSlotId], references: [id], onDelete: Cascade)
+  freeSlot      FreeSlot      @relation(fields: [freeSlotId], references: [id])
+  freeSlotId    Int           @unique
   status        AppointmentStatus @default(SCHEDULED) // SCHEDULED, CANCELLED, RESCHEDULED
   notes         String?
   createdAt     DateTime      @default(now())
