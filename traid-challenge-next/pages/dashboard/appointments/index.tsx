@@ -12,23 +12,33 @@ import { AppointmentBookingForm } from "@/components/AppointmentBookingForm";
 import { useState, useEffect } from "react";
 
 interface AppointmentsPageProps {
-  appointments: any[];
-  availableSlots: any[];
-  gp: any;
+  appointments?: any[];
+  availableSlots?: any[];
+  doctors?: any[];
+  gpMain?: any;
+  error?: string;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  // Hardcoded NHS number for now
   const NHS_NUMBER = "1234567890";
 
   try {
     const user = await prisma.user.findUnique({
       where: { nhsNumber: NHS_NUMBER },
-      include: { gp: true },
+      include: { gpMain: true },
     });
 
-    if (!user) {
-      return { notFound: true };
+    if (!user || !user.gpMainId) {
+      return {
+        props: {
+          error: "No GP practice assigned to this user",
+          messages: (
+            await import(
+              `../../../messages/${locale === "default" ? "en" : locale}.json`
+            )
+          ).default,
+        },
+      };
     }
 
     const appointments = await prisma.appointment.findMany({
@@ -47,13 +57,26 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
       },
     });
 
+    // Get all doctors from the same GP practice
+    const doctors = await prisma.gP.findMany({
+      where: {
+        gpMainId: user.gpMainId,
+      },
+    });
+
+    // Get available slots for all doctors in the practice
     const availableSlots = await prisma.freeSlot.findMany({
       where: {
-        gpId: user.gpId!,
+        gp: {
+          gpMainId: user.gpMainId,
+        },
         isBooked: false,
         startTime: {
           gte: new Date(),
         },
+      },
+      include: {
+        gp: true,
       },
       orderBy: {
         startTime: "asc",
@@ -64,7 +87,8 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
       props: {
         appointments: JSON.parse(JSON.stringify(appointments)),
         availableSlots: JSON.parse(JSON.stringify(availableSlots)),
-        gp: JSON.parse(JSON.stringify(user.gp)),
+        doctors: JSON.parse(JSON.stringify(doctors)),
+        gpMain: JSON.parse(JSON.stringify(user.gpMain)),
         messages: (
           await import(
             `../../../messages/${locale === "default" ? "en" : locale}.json`
@@ -79,9 +103,11 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
 };
 
 const AppointmentsPage = ({
-  availableSlots,
-  gp,
-}: Omit<AppointmentsPageProps, "appointments">) => {
+  availableSlots = [],
+  doctors = [],
+  gpMain,
+  error,
+}: AppointmentsPageProps) => {
   const t = useTranslations("appointments");
   const commonT = useTranslations("common");
   const [appointments, setAppointments] = useState<
@@ -111,7 +137,7 @@ const AppointmentsPage = ({
       const response = await fetch("/api/appointments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, gpId: gp.id }),
+        body: JSON.stringify({ ...data, gpId: gpMain.id }),
       });
 
       const result = await response.json();
@@ -158,6 +184,22 @@ const AppointmentsPage = ({
       console.error("Error rescheduling appointment:", error);
     }
   };
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="p-8 bg-white">
+          <Breadcrumbs
+            items={[
+              { label: commonT("dashboard"), href: "/dashboard" },
+              { label: t("title") },
+            ]}
+          />
+          <div className="text-red-600 mt-4">{error}</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -210,7 +252,8 @@ const AppointmentsPage = ({
               {t("book")}
             </h2>
             <AppointmentBookingForm
-              gp={gp}
+              gpMain={gpMain}
+              doctors={doctors}
               availableSlots={availableSlots}
               onSubmit={handleBookAppointment}
             />

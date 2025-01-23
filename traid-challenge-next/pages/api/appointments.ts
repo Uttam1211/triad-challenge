@@ -35,6 +35,29 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
     const { slotId, notes, gpId } = result.data;
 
+    const user = await prisma.user.findUnique({
+      where: { nhsNumber: NHS_NUMBER },
+      include: { gpMain: true },
+    });
+
+    if (!user || !user.gpMainId) {
+      return res.status(404).json({ message: "User or GP practice not found" });
+    }
+
+    // Verify the selected GP belongs to user's practice
+    const selectedGP = await prisma.gP.findFirst({
+      where: {
+        id: gpId,
+        gpMainId: user.gpMainId,
+      },
+    });
+
+    if (!selectedGP) {
+      return res
+        .status(400)
+        .json({ message: "Selected GP is not from your practice" });
+    }
+
     // Check if slot exists and is available
     const slot = await prisma.freeSlot.findFirst({
       where: {
@@ -50,14 +73,6 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       return res
         .status(400)
         .json({ message: "This slot is no longer available" });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { nhsNumber: NHS_NUMBER },
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
     }
 
     // Check if user already has an appointment at this time
@@ -221,10 +236,6 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
 async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { id } = req.query;
-    if (!id)
-      return res.status(400).json({ message: "Appointment ID is required" });
-
-    // Validate request body
     const result = RescheduleSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({
@@ -235,18 +246,36 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
 
     const { newSlotId } = result.data;
 
-    // Check if new slot is available
-    const newSlot = await prisma.freeSlot.findUnique({
-      where: { id: newSlotId },
+    const user = await prisma.user.findUnique({
+      where: { nhsNumber: NHS_NUMBER },
+      include: { gpMain: true },
     });
 
-    if (!newSlot || newSlot.isBooked) {
-      return res
-        .status(400)
-        .json({ message: "Selected slot is not available" });
+    if (!user || !user.gpMainId) {
+      return res.status(404).json({ message: "User or GP practice not found" });
     }
 
-    // Use transaction to ensure data consistency
+    // Check if new slot belongs to a GP from the same practice
+    const newSlot = await prisma.freeSlot.findFirst({
+      where: {
+        id: newSlotId,
+        isBooked: false,
+        gp: {
+          gpMainId: user.gpMainId,
+        },
+      },
+      include: {
+        gp: true,
+      },
+    });
+
+    if (!newSlot) {
+      return res.status(400).json({
+        message:
+          "Selected slot is not available or GP is not from your practice",
+      });
+    }
+
     const updatedAppointment = await prisma.$transaction(async (tx) => {
       const appointment = await tx.appointment.findUnique({
         where: { id: Number(id) },
@@ -256,6 +285,11 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
       if (!appointment) {
         throw new Error("Appointment not found");
       }
+
+      // First, delete the old appointment
+      await tx.appointment.delete({
+        where: { id: Number(id) },
+      });
 
       // Release old slot
       await tx.freeSlot.update({
@@ -269,12 +303,14 @@ async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
         data: { isBooked: true },
       });
 
-      // Update appointment with new slot
-      return tx.appointment.update({
-        where: { id: Number(id) },
+      // Create new appointment
+      return tx.appointment.create({
         data: {
+          userId: appointment.userId,
           freeSlotId: newSlotId,
+          gpId: newSlot.gp.id,
           status: "RESCHEDULED",
+          notes: appointment.notes,
         },
         include: {
           gp: true,

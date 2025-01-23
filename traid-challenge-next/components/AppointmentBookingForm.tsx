@@ -15,32 +15,40 @@ import { Info, AlertCircle } from "lucide-react";
 type AppointmentType = "GP" | "HOSPITAL";
 
 interface AppointmentBookingFormProps {
-  gp: {
+  gpMain: any;
+  doctors: Array<{
     id: number;
     name: string;
-  };
+  }>;
   availableSlots: Array<{
     id: number;
     startTime: string;
     endTime: string;
+    gp: {
+      id: number;
+      name: string;
+    };
   }>;
-  onSubmit: (data: {
-    slotId: number;
-    notes: string;
-    type: AppointmentType;
-  }) => void;
+  onSubmit: (data: any) => void;
 }
 
 export const AppointmentBookingForm = ({
-  gp,
+  gpMain,
+  doctors,
   availableSlots,
   onSubmit,
 }: AppointmentBookingFormProps) => {
-  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<string>("");
+  const [selectedSlot, setSelectedSlot] = useState<string>("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations("appointments");
+
+  // Filter slots for selected doctor
+  const doctorSlots = availableSlots.filter(
+    (slot) => slot.gp.id === Number(selectedDoctor)
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +59,9 @@ export const AppointmentBookingForm = ({
       setIsSubmitting(true);
 
       await onSubmit({
-        slotId: selectedSlot,
+        slotId: Number(selectedSlot),
         notes,
-        type: "GP",
+        gpId: Number(selectedDoctor),
       });
     } catch (err) {
       // Handle API error responses
@@ -109,33 +117,44 @@ export const AppointmentBookingForm = ({
           GP
         </label>
         <div className="p-2 border-2 rounded-md bg-gray-50 text-[#212b32]">
-          {gp.name}
+          {gpMain.name}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1 text-[#212b32]">
-          Available Slots
-        </label>
-        <Select
-          onValueChange={(value) => {
-            setSelectedSlot(Number(value));
-            setError(null);
-          }}
-          disabled={isSubmitting}
-        >
-          <SelectTrigger className="bg-white border-2">
-            <SelectValue placeholder="Select a time slot" />
+        <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a doctor" />
           </SelectTrigger>
           <SelectContent>
-            {availableSlots.map((slot) => (
-              <SelectItem key={slot.id} value={slot.id.toString()}>
-                {format(new Date(slot.startTime), "PPP p")}
+            {doctors.map((doctor) => (
+              <SelectItem key={doctor.id} value={doctor.id.toString()}>
+                {doctor.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
+
+      {selectedDoctor && (
+        <div>
+          <Select value={selectedSlot} onValueChange={setSelectedSlot}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select an appointment time" />
+            </SelectTrigger>
+            <SelectContent>
+              {doctorSlots.map((slot) => (
+                <SelectItem key={slot.id} value={slot.id.toString()}>
+                  {format(
+                    new Date(slot.startTime),
+                    "MMMM do, yyyy 'at' h:mm a"
+                  )}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium mb-1 text-[#212b32]">
@@ -152,8 +171,8 @@ export const AppointmentBookingForm = ({
 
       <button
         type="submit"
-        disabled={!selectedSlot || isSubmitting}
-        className="w-full bg-[#005eb8] text-white py-2 px-4 rounded-md hover:bg-[#004b93] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!selectedDoctor || !selectedSlot || isSubmitting}
+        className="w-full bg-[#005EB8] text-white px-4 py-2 rounded-md hover:bg-[#004B9C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? "Booking..." : "Book Appointment"}
       </button>

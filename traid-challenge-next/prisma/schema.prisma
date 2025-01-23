@@ -20,8 +20,8 @@ model User {
   role          Role           @relation(fields: [roleId], references: [id])
   roleId        Int
   userDetails   UserDetails[]
-  gpId          Int?
-  gp            GP?           @relation(fields: [gpId], references: [id])
+  gpMainId      Int?
+  gpMain        GPMain?       @relation(fields: [gpMainId], references: [id])
   familyMembers FamilyMember[]
   appointments  Appointment[]
   referrals     Referral[]
@@ -38,6 +38,7 @@ model GPMain {
   phoneNumber   String
   email         String        @unique
   doctors       GP[]          // Relation to individual doctors
+  users         User[]        // Added this line for reverse relation
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
@@ -49,7 +50,6 @@ model GP {
   gpMainId      Int          // Reference to the surgery
   gpMain        GPMain       @relation(fields: [gpMainId], references: [id])
   freeSlots     FreeSlot[]
-  users         User[]
   familyMembers FamilyMember[]
   appointments  Appointment[]
   referrals     Referral[]

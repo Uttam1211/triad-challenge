@@ -18,22 +18,69 @@ import {
 import { ReferralCard, type Referral } from "../../components/ReferralCard";
 import { AvailabilityCalendar } from "../../components/AvailabilityCalendar";
 import { DashboardLayout } from "../../components/layouts/DashboardLayout";
+import { useState, useEffect } from "react";
 
 const UserDashboard = () => {
-  // Example data - replace with real data from your API
-  const upcomingAppointments: AppointmentCardProps["appointment"][] = [
-    {
-      id: 1,
-      freeSlot: {
-        startTime: "2025-03-15T10:00:00Z",
-        endTime: "2025-03-15T10:30:00Z",
-      },
-      status: "SCHEDULED",
-      gp: {
-        name: "Smith",
-      },
-    },
-  ];
+  const [appointments, setAppointments] = useState<
+    AppointmentCardProps["appointment"][]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await fetch("/api/appointments");
+      if (!response.ok) throw new Error("Failed to fetch appointments");
+      const data = await response.json();
+      setAppointments(data);
+    } catch (err) {
+      setError("Could not load appointments");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const handleCancelAppointment = async (id: number) => {
+    try {
+      const response = await fetch(`/api/appointments?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to cancel appointment");
+
+      // Refresh appointments list
+      fetchAppointments();
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      setError("Failed to cancel appointment");
+    }
+  };
+
+  const handleRescheduleAppointment = async (id: number, newSlotId: number) => {
+    try {
+      // Fetch available slots first
+      const slotsResponse = await fetch("/api/slots");
+      if (!slotsResponse.ok) throw new Error("Failed to fetch slots");
+      const slots = await slotsResponse.json();
+      setAvailableSlots(slots);
+
+      const response = await fetch(`/api/appointments?id=${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newSlotId }),
+      });
+
+      if (!response.ok) throw new Error("Failed to reschedule appointment");
+      fetchAppointments();
+    } catch (error) {
+      setError("Failed to reschedule appointment");
+    }
+  };
 
   const recentReferrals: Referral[] = [
     {
@@ -196,17 +243,80 @@ const UserDashboard = () => {
                   View all
                 </Link>
               </div>
-              <div className="space-y-4">
-                {upcomingAppointments.map((appointment) => (
-                  <AppointmentCard
-                    key={appointment.id}
-                    appointment={appointment}
-                    showActions={true}
-                    onReschedule={(id) => console.log("Reschedule", id)}
-                    onCancel={(id) => console.log("Cancel", id)}
-                  />
-                ))}
-              </div>
+
+              {loading ? (
+                <div className="p-4 text-center text-gray-600">
+                  Loading appointments...
+                </div>
+              ) : error ? (
+                <div className="p-4 text-[#d5281b]">{error}</div>
+              ) : appointments.length > 0 ? (
+                <div className="space-y-4">
+                  {appointments.map((appointment) => (
+                    <AppointmentCard
+                      key={appointment.id}
+                      appointment={appointment}
+                      showActions={true}
+                      onReschedule={handleRescheduleAppointment}
+                      onCancel={handleCancelAppointment}
+                      availableSlots={availableSlots}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="p-4 bg-[#fff1f0] border-2 border-[#d5281b] rounded-md">
+                    <p className="text-[#212b32] mb-2">
+                      You have no upcoming appointments.
+                    </p>
+                    <Link
+                      href="/dashboard/appointments"
+                      className="inline-flex items-center text-[#005eb8] hover:underline font-bold"
+                    >
+                      Book an appointment
+                      <svg
+                        className="w-4 h-4 ml-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
+                  <div className="p-4 bg-[#fff1f0] border border-[#d5281b] rounded-md">
+                    <p className="text-[#212b32] mb-2">
+                      <strong>Need urgent medical help?</strong>
+                    </p>
+                    <Link
+                      href="https://111.nhs.uk/"
+                      className="inline-flex items-center text-[#d5281b] hover:underline font-bold"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Go to NHS 111 online
+                      <svg
+                        className="w-4 h-4 ml-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
             {/* Recent Referrals */}

@@ -54,7 +54,7 @@ export const AppointmentCard = ({
         <MapPin className="text-[#005EB8]" size={20} />
         <span className="text-gray-800">
           {appointment.gp?.name
-            ? `Dr. ${appointment.gp.name}`
+            ? ` ${appointment.gp.name}`
             : "Doctor not assigned"}
         </span>
       </div>
@@ -90,7 +90,7 @@ export const AppointmentCard = ({
                 <AlertDialogDescription className="text-[#4C6272]">
                   Are you sure you want to cancel this appointment with{" "}
                   {appointment.gp?.name
-                    ? `Dr. ${appointment.gp.name}`
+                    ? ` ${appointment.gp.name}`
                     : "your doctor"}{" "}
                   on{" "}
                   {appointment.freeSlot?.startTime
