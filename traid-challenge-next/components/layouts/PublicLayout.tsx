@@ -1,28 +1,18 @@
 // components/layouts/PublicLayout.tsx
 import React from "react";
-import Header from "../header";
-import Footer from "../footer";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
-  header?: React.ReactNode;
-  footer?: React.ReactNode;
 };
 
-const PublicLayout: React.FC<PublicLayoutProps> = ({
-  children,
-  header = <Header />,
-  footer = <Footer />,
-}) => {
+export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
-      {header}
-      <main className="flex-grow container mx-auto max-w-7xl px-5 my-5">
-        {children}
-      </main>
-      {footer}
+      <Header />
+      <main className="flex-grow">{children}</main>
+      <Footer />
     </div>
   );
 };
-
-export default PublicLayout;
