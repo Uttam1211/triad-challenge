@@ -14,18 +14,7 @@ import {
 import { RescheduleDialog } from "./RescheduleDialog";
 
 export interface AppointmentCardProps {
-  appointment: {
-    id: number;
-    freeSlot: {
-      startTime: string;
-      endTime: string;
-    };
-    status: "SCHEDULED" | "CANCELLED" | "RESCHEDULED";
-    notes?: string;
-    gp: {
-      name: string;
-    };
-  };
+  appointment: any
   showActions?: boolean;
   onReschedule?: (id: number, newSlotId: number) => void;
   onCancel?: (id: number) => void;
