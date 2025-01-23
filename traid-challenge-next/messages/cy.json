@@ -1,0 +1,51 @@
+{
+  "common": {
+    "dashboard": "Dangosfwrdd",
+    "loading": "Llwytho...",
+    "error": "Digwyddodd gwall",
+    "save": "Cadw",
+    "cancel": "Canslo",
+    "confirm": "Cadarnhau",
+    "back": "Yn ôl"
+  },
+  "dashboard": {
+    "title": "Dangosfwrdd",
+    "welcome": "Croeso i'r GIG",
+    "quickActions": {
+      "title": "Gweithredoedd Cyflym",
+      "book": "Trefnu Apwyntiad",
+      "urgent": "GIG 111 Ar-lein",
+      "family": "Rheoli Aelodau Teulu",
+      "settings": "Gosodiadau Cyfrif",
+      "contact": "Cysylltu â Ni",
+      "nhsApp": "Ap GIG"
+    }
+  },
+  "settings": {
+    "title": "Gosodiadau Cyfrif",
+    "language": {
+      "title": "Iaith",
+      "select": "Dewis iaith"
+    },
+    "notifications": {
+      "title": "Hysbysiadau",
+      "description": "Dewiswch sut a phryd rydych chi am dderbyn hysbysiadau am apwyntiadau, presgripsiynau, a diweddariadau pwysig eraill.",
+      "manage": "Rheoli Dewisiadau"
+    },
+    "textSize": {
+      "title": "Maint Testun",
+      "small": "Bach",
+      "medium": "Canolig",
+      "large": "Mawr"
+    },
+    "privacy": {
+      "title": "Preifatrwydd",
+      "description": "Rheoli eich gosodiadau preifatrwydd a dewisiadau rhannu data.",
+      "view": "Gweld Gosodiadau Preifatrwydd"
+    },
+    "help": {
+      "title": "Angen help?",
+      "description": "Os ydych chi angen cymorth gyda'ch gosodiadau cyfrif, cysylltwch â'n tîm cymorth trwy'r dudalen Cysylltu â Ni."
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to NHS",
+    "quickActions": {
+      "title": "Quick Actions",
+      "book": "Book Appointment",
+      "urgent": "NHS 111 Online",
+      "family": "Manage Family Members",
+      "settings": "Account Settings",
+      "contact": "Contact Us",
+      "nhsApp": "NHS App"
+    }
+  },
+  "settings": {
+    "title": "Account Settings",
+    "language": {
+      "title": "Language",
+      "select": "Select language"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Choose how and when you want to receive notifications about appointments, prescriptions, and other important updates.",
+      "manage": "Manage Preferences"
+    },
+    "textSize": {
+      "title": "Text Size",
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    },
+    "privacy": {
+      "title": "Privacy",
+      "description": "Manage your privacy settings and data sharing preferences.",
+      "view": "View Privacy Settings"
+    },
+    "help": {
+      "title": "Need help?",
+      "description": "If you need assistance with your account settings, please contact our support team through the Contact Us page."
+    }
+  },
+  "appointments": {
+    "title": "Appointments",
+    "book": "Book Appointment",
+    "upcoming": "Upcoming Appointments",
+    "past": "Past Appointments",
+    "noAppointments": "No appointments found"
+  },
+  "common": {
+    "dashboard": "Dashboard",
+    "appointments": "Appointments",
+    "availability": "Availability",
+    "referrals": "Referrals",
+    "history": "History",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "openUserMenu": "Open user menu",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back"
+  }
+}

@@ -1,65 +1,158 @@
-import { motion } from 'framer-motion';
-import { appointments } from '../../data/mockData';
-import { Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { useState } from 'react';
+import { Calendar, Clock, MapPin, CheckCircle, XCircle, Edit, Trash } from 'lucide-react';
+import { format, isBefore, isAfter } from 'date-fns';
 
-const History = () => {
+const AppointmentHistory = () => {
+  const [activeTab, setActiveTab] = useState('upcoming');
+
+  // Dummy data for appointments
+  const appointments = [
+    {
+      id: 1,
+      date: '2025-03-15',
+      time: '10:00 AM',
+      type: 'GP',
+      status: 'scheduled',
+    },
+    {
+      id: 2,
+      date: '2023-11-20',
+      time: '02:30 PM',
+      type: 'GP',
+      status: 'completed',
+    },
+    {
+      id: 3,
+      date: '2024-03-05',
+      time: '09:00 AM',
+      type: 'GP',
+      status: 'scheduled',
+    },
+    {
+      id: 4,
+      date: '2025-03-12',
+      time: '11:00 AM',
+      type: 'Hospital',
+      status: 'scheduled',
+    },
+    {
+      id: 5,
+      date: '2023-10-10',
+      time: '03:00 PM',
+      type: 'GP',
+      status: 'cancelled',
+    },
+  ];
+
+  // Filter appointments
+  const upcomingAppointments = appointments.filter((appointment) =>
+    isAfter(new Date(appointment.date), new Date())
+  );
+  const pastAppointments = appointments.filter((appointment) =>
+    isBefore(new Date(appointment.date), new Date())
+  );
+
+  // Handle cancel appointment
+  const handleCancel = (id: number) => {
+    alert(`Cancel appointment with ID: ${id}`);
+    // Add logic to cancel the appointment (e.g., API call)
+  };
+
+  // Handle reschedule appointment
+  const handleReschedule = (id: number) => {
+    alert(`Reschedule appointment with ID: ${id}`);
+    // Add logic to reschedule the appointment (e.g., open a modal)
+  };
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8">Appointment History</h1>
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-8 text-[#005EB8]">Appointment History</h1>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg shadow-md p-6"
-      >
+      {/* Tabs */}
+      <div className="flex space-x-4 mb-8">
+        <button
+          onClick={() => setActiveTab('upcoming')}
+          className={`px-4 py-2 rounded-md ${
+            activeTab === 'upcoming'
+              ? 'bg-[#005EB8] text-white'
+              : 'bg-white text-[#005EB8] hover:bg-gray-100'
+          }`}
+        >
+          Upcoming Appointments
+        </button>
+        <button
+          onClick={() => setActiveTab('past')}
+          className={`px-4 py-2 rounded-md ${
+            activeTab === 'past'
+              ? 'bg-[#005EB8] text-white'
+              : 'bg-white text-[#005EB8] hover:bg-gray-100'
+          }`}
+        >
+          Past Appointments
+        </button>
+      </div>
+
+      {/* Appointment List */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-[#005EB8]">
+          {activeTab === 'upcoming' ? 'Upcoming Appointments' : 'Past Appointments'}
+        </h2>
         <div className="space-y-4">
-          {appointments.map((appointment) => (
-            <motion.div
-              key={appointment.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="border rounded-md p-4"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Calendar className="text-blue-600" size={20} />
-                    <span>{format(new Date(appointment.date), 'MMMM do, yyyy')}</span>
-                  </div>
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Clock className="text-blue-600" size={20} />
-                    <span>{appointment.time}</span>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {appointment.type} Appointment
-                  </div>
+          {(activeTab === 'upcoming' ? upcomingAppointments : pastAppointments).map(
+            (appointment) => (
+              <div
+                key={appointment.id}
+                className="border rounded-md p-4 hover:border-[#005EB8] transition-colors"
+              >
+                <div className="flex items-center space-x-3 mb-2">
+                  <Calendar className="text-[#005EB8]" size={20} />
+                  <span className="text-gray-800">
+                    {format(new Date(appointment.date), 'MMMM do, yyyy')}
+                  </span>
                 </div>
-                <div>
-                  {appointment.status === 'completed' ? (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                      <CheckCircle size={16} className="mr-1" />
-                      Completed
-                    </span>
-                  ) : appointment.status === 'cancelled' ? (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                      <XCircle size={16} className="mr-1" />
-                      Cancelled
-                    </span>
+                <div className="flex items-center space-x-3 mb-2">
+                  <Clock className="text-[#005EB8]" size={20} />
+                  <span className="text-gray-800">{appointment.time}</span>
+                </div>
+                <div className="flex items-center space-x-3 mb-2">
+                  <MapPin className="text-[#005EB8]" size={20} />
+                  <span className="text-gray-800">{appointment.type} Appointment</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  {appointment.status.toLowerCase() === 'completed' ? (
+                    <CheckCircle className="text-green-600" size={20} />
                   ) : (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                      <Calendar size={16} className="mr-1" />
-                      Scheduled
-                    </span>
+                    <XCircle className="text-red-600" size={20} />
                   )}
+                  <span className="text-sm text-gray-800">{appointment.status}</span>
                 </div>
+
+                {/* Action Buttons for Upcoming Appointments */}
+                {activeTab === 'upcoming' && (
+                  <div className="flex space-x-4 mt-4">
+                    <button
+                      onClick={() => handleReschedule(appointment.id)}
+                      className="flex items-center space-x-2 bg-[#005EB8] text-white px-4 py-2 rounded-md hover:bg-[#004B9C] transition-colors"
+                    >
+                      <Edit size={16} />
+                      <span>Reschedule</span>
+                    </button>
+                    <button
+                      onClick={() => handleCancel(appointment.id)}
+                      className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+                    >
+                      <Trash size={16} />
+                      <span>Cancel</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            </motion.div>
-          ))}
+            )
+          )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
 
-export default History;
+export default AppointmentHistory;
