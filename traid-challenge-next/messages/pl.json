@@ -1,0 +1,51 @@
+{
+  "common": {
+    "dashboard": "Panel",
+    "loading": "Ładowanie...",
+    "error": "Wystąpił błąd",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "back": "Powrót"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Witamy w NHS",
+    "quickActions": {
+      "title": "Szybkie Akcje",
+      "book": "Umów Wizytę",
+      "urgent": "NHS 111 Online",
+      "family": "Zarządzaj Członkami Rodziny",
+      "settings": "Ustawienia Konta",
+      "contact": "Kontakt",
+      "nhsApp": "Aplikacja NHS"
+    }
+  },
+  "settings": {
+    "title": "Ustawienia Konta",
+    "language": {
+      "title": "Język",
+      "select": "Wybierz język"
+    },
+    "notifications": {
+      "title": "Powiadomienia",
+      "description": "Wybierz jak i kiedy chcesz otrzymywać powiadomienia o wizytach, receptach i innych ważnych aktualizacjach.",
+      "manage": "Zarządzaj Preferencjami"
+    },
+    "textSize": {
+      "title": "Rozmiar Tekstu",
+      "small": "Mały",
+      "medium": "Średni",
+      "large": "Duży"
+    },
+    "privacy": {
+      "title": "Prywatność",
+      "description": "Zarządzaj ustawieniami prywatności i preferencjami udostępniania danych.",
+      "view": "Zobacz Ustawienia Prywatności"
+    },
+    "help": {
+      "title": "Potrzebujesz pomocy?",
+      "description": "Jeśli potrzebujesz pomocy z ustawieniami konta, skontaktuj się z naszym zespołem wsparcia przez stronę Kontakt."
+    }
+  }
+}

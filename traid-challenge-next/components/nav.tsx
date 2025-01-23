@@ -8,7 +8,7 @@ const Nav = () => {
     const router = useRouter();
     const isActive = (path: string) => router.pathname === path;
   return (
-    <nav className="bg-white border-b border-gray-200">
+    <nav className="bg-white border-b border-gray-200 mx-5">
       <div className="container mx-auto">
         <div className="flex space-x-4 p-4">
           <Link
