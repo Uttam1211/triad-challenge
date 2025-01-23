@@ -19,6 +19,7 @@ import { ReferralCard, type Referral } from "../../components/ReferralCard";
 import { AvailabilityCalendar } from "../../components/AvailabilityCalendar";
 import { DashboardLayout } from "../../components/layouts/DashboardLayout";
 import { useState, useEffect } from "react";
+import { withAuth } from "../../components/withAuth";
 
 const UserDashboard = () => {
   const [appointments, setAppointments] = useState<
@@ -353,4 +354,4 @@ const UserDashboard = () => {
   );
 };
 
-export default UserDashboard;
+export default withAuth(UserDashboard, "user");

@@ -1,5 +1,5 @@
 // config/layoutConfig.ts
-import PublicLayout from "@/components/layouts/PublicLayout";
+import { PublicLayout } from "@/components/layouts/PublicLayout";
 const layoutConfig = {
   publicPaths: [
     "/",

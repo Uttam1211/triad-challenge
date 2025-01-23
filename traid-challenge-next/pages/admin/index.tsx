@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AppointmentCard } from "../../components/AppointmentCard";
 import { ReferralCard } from "../../components/ReferralCard";
 import { AdminLayout } from "../../components/layouts/AdminLayout";
+import { withAuth } from "../../components/withAuth";
 
 const AdminDashboard = () => {
   const recentAppointments = [
@@ -138,4 +139,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default withAuth(AdminDashboard, "admin");
