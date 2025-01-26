@@ -32,11 +32,9 @@ const eslintConfig = [
   // Add custom rules
   {
     rules: {
-      "no-unused-vars": "off", // Disable no-unused-vars for JavaScript/TypeScript
-      "@typescript-eslint/no-unused-vars": [
-        "warn", // Use the TypeScript-specific rule for unused variables
-        { vars: "all", args: "after-used", ignoreRestSiblings: true },
-      ],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
 ];
