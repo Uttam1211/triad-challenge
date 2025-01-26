@@ -1,6 +1,7 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+import ts from "@typescript-eslint/eslint-plugin"; // Import the TypeScript plugin
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,7 +21,9 @@ const eslintConfig = [
         project: "./tsconfig.json", // Specify the path to your tsconfig.json
       },
     },
-    plugins: ["@typescript-eslint"], // Enable the TypeScript plugin
+    plugins: {
+      "@typescript-eslint": ts, // Use the imported TypeScript plugin
+    },
   },
 
   // Include Next.js and TypeScript configurations
