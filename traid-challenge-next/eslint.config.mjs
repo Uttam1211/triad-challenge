@@ -12,11 +12,13 @@ const compat = new FlatCompat({
 const eslintConfig = [
   // Add "parser" explicitly for TypeScript support
   {
-    parser: "@typescript-eslint/parser",
-    parserOptions: {
-      ecmaVersion: 2020, // Specify the ECMAScript version
-      sourceType: "module", // Use ES modules
-      project: "./tsconfig.json", // Specify the path to your tsconfig.json
+    languageOptions: {
+      parser: "@typescript-eslint/parser",
+      parserOptions: {
+        ecmaVersion: 2020, // Specify the ECMAScript version
+        sourceType: "module", // Use ES modules
+        project: "./tsconfig.json", // Specify the path to your tsconfig.json
+      },
     },
     plugins: ["@typescript-eslint"], // Enable the TypeScript plugin
   },
