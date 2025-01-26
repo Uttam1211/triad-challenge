@@ -11,7 +11,6 @@ export default function Home() {
         try {
           const user = JSON.parse(currentUser);
           router.replace(user.role === "admin" ? "/admin" : "/dashboard");
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           router.replace("/login");
         }
