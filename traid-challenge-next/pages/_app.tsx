@@ -3,6 +3,8 @@ import type { AppProps } from "next/app";
 import getLayoutType from "@/config/layoutConfig";
 import { NextIntlClientProvider } from "next-intl";
 import { useRouter } from "next/router";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react"
 
 export default function App({
   Component,
@@ -27,6 +29,8 @@ export default function App({
     >
       <Layout>
         <Component {...pageProps} onLocaleChange={handleLocaleChange} />
+        <SpeedInsights />
+        <Analytics />
       </Layout>
     </NextIntlClientProvider>
   );
