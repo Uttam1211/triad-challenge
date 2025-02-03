@@ -10,6 +10,7 @@ import {
 } from "@/components/AppointmentCard";
 import { AppointmentBookingForm } from "@/components/AppointmentBookingForm";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 interface AppointmentsPageProps {
   appointments?: any[];
@@ -17,6 +18,7 @@ interface AppointmentsPageProps {
   doctors?: any[];
   gpMain?: any;
   error?: string;
+  isLoading?: boolean;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
@@ -32,6 +34,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
       return {
         props: {
           error: "No GP practice assigned to this user",
+          isLoading: false,
           messages: (
             await import(
               `../../../messages/${locale === "default" ? "en" : locale}.json`
@@ -89,6 +92,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
         availableSlots: JSON.parse(JSON.stringify(availableSlots)),
         doctors: JSON.parse(JSON.stringify(doctors)),
         gpMain: JSON.parse(JSON.stringify(user.gpMain)),
+        isLoading: false,
         messages: (
           await import(
             `../../../messages/${locale === "default" ? "en" : locale}.json`
@@ -98,7 +102,17 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
     };
   } catch (error) {
     console.error("Error:", error);
-    return { notFound: true };
+    return {
+      props: {
+        error: "Failed to load data",
+        isLoading: false,
+        messages: (
+          await import(
+            `../../../messages/${locale === "default" ? "en" : locale}.json`
+          )
+        ).default,
+      },
+    };
   }
 };
 
@@ -107,13 +121,15 @@ const AppointmentsPage = ({
   doctors = [],
   gpMain,
   error,
+  isLoading: initialLoading = true,
 }: AppointmentsPageProps) => {
   const t = useTranslations("appointments");
   const commonT = useTranslations("common");
+  const router = useRouter();
   const [appointments, setAppointments] = useState<
     AppointmentCardProps["appointment"][]
   >([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(initialLoading);
 
   const fetchAppointments = async () => {
     try {
@@ -184,6 +200,24 @@ const AppointmentsPage = ({
       console.error("Error rescheduling appointment:", error);
     }
   };
+
+  if (!router.isReady || isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="p-8 bg-white">
+          <Breadcrumbs
+            items={[
+              { label: commonT("dashboard"), href: "/dashboard" },
+              { label: t("title") },
+            ]}
+          />
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-lg">Loading...</div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (error) {
     return (

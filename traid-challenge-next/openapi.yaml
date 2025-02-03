@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  title: NHS Booking System API
+  version: "1.0.0"
+  description: API documentation for NHS Booking System
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+
+paths:
+  /available-slots:
+    get:
+      summary: Get available appointment slots
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Date to check availability (YYYY-MM-DD)
+        - in: query
+          name: gpId
+          required: false
+          schema:
+            type: integer
+          description: Filter slots by specific GP
+      responses:
+        "200":
+          description: List of available slots grouped by GP
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    gp:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                    slots:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          startTime:
+                            type: string
+                            format: date-time
+                          endTime:
+                            type: string
+                            format: date-time
+                          isBooked:
+                            type: boolean
+                    count:
+                      type: integer
+        "400":
+          description: Bad request - Date is required
+        "500":
+          description: Internal server error
+
+  /appointments:
+    get:
+      summary: Get all appointments
+      responses:
+        "200":
+          description: List of appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+        "500":
+          description: Internal server error
+
+    post:
+      summary: Create new appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentInput"
+      responses:
+        "201":
+          description: Appointment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "500":
+          description: Internal server error
+
+  /appointments/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Appointment ID
+
+    get:
+      summary: Get appointment by ID
+      responses:
+        "200":
+          description: Appointment details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "404":
+          description: Appointment not found
+        "500":
+          description: Internal server error
+
+    put:
+      summary: Update appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentInput"
+      responses:
+        "200":
+          description: Appointment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "404":
+          description: Appointment not found
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+        patientName:
+          type: string
+        doctorName:
+          type: string
+        status:
+          type: string
+          enum: [SCHEDULED, CANCELLED, COMPLETED]
+      required:
+        - id
+        - date
+        - time
+        - status
+
+    AppointmentInput:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+        patientName:
+          type: string
+        doctorName:
+          type: string
+      required:
+        - date
+        - time
